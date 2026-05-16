@@ -8,7 +8,23 @@ const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
 app.post('/api/openai', async (req, res) => {
   const apiKey = process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY;
   if (!apiKey) {
-    return res.status(400).json({ error: 'Server: OPENAI_API_KEY is not set in environment.' });
+    // Return a safe mock response so the UI can function without exposing a key.
+    console.warn('OPENAI_API_KEY missing — returning mock response');
+    return res.status(200).json({
+      id: 'mock-recommendation',
+      object: 'chat.completion',
+      created: Date.now(),
+      model: req.body?.model || 'gpt-mock',
+      choices: [
+        {
+          message: {
+            role: 'assistant',
+            content:
+              'Mock Recommendation: Unable to call OpenAI because server API key is not configured. Based on available data, this is a neutral recommendation — please add an API key to get a real recommendation.'
+          }
+        }
+      ]
+    });
   }
 
   try {
