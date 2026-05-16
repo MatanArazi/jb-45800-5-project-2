@@ -1,0 +1,6 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import profileImage from '../assets/profile.svg';
+const AboutPage = () => {
+    return (_jsxs("div", { className: "page about-page", children: [_jsx("header", { className: "page-title-row", children: _jsxs("div", { children: [_jsx("h1", { children: "About the Project" }), _jsx("p", { children: "React + TypeScript project with Redux for viewing crypto information and reports." })] }) }), _jsxs("section", { className: "about-content", children: [_jsxs("div", { className: "about-card", children: [_jsx("h2", { children: "What the project includes" }), _jsx("p", { children: "The site shows the top 100 coins, supports search and tracking up to 5 selected coins with a switch, provides a realtime price report every second, and shows AI recommendations using OpenAI ChatGPT." })] }), _jsxs("div", { className: "about-card about-person", children: [_jsx("img", { src: profileImage, alt: "Profile image", className: "profile-image" }), _jsxs("div", { children: [_jsx("h2", { children: "Developer" }), _jsx("p", { children: "Name: [Enter Name]" }), _jsx("p", { children: "Course: Full Stack Web Developer" }), _jsx("p", { children: "Tools: React, TypeScript, Redux, Vite" })] })] })] })] }));
+};
+export default AboutPage;
