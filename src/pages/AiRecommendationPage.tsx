@@ -51,11 +51,6 @@ const AiRecommendationPage = () => {
       setError('Please select one coin to get an AI recommendation.');
       return;
     }
-    const openaiKey = import.meta.env.VITE_OPENAI_API_KEY;
-    if (!openaiKey) {
-      setError('VITE_OPENAI_API_KEY must be set to use ChatGPT.');
-      return;
-    }
     setLoading(true);
     setError(null);
 
@@ -67,11 +62,10 @@ const AiRecommendationPage = () => {
             return res.json();
           });
       const prompt = buildPrompt(detailsData);
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('/api/openai', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${openaiKey}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           model: 'gpt-3.5-turbo',
@@ -92,7 +86,7 @@ const AiRecommendationPage = () => {
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.error?.message || 'ChatGPT error');
+        throw new Error(data.error?.message || data.error || 'ChatGPT proxy error');
       }
       const text = data.choices?.[0]?.message?.content;
       setRecommendation(text || 'No valid recommendation was returned.');
