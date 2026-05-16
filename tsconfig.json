@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "useDefineForClassFields": true,
+    "lib": ["dom", "dom.iterable", "es2020"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src"]
+}
