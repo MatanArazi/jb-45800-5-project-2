@@ -44,6 +44,33 @@ app.post('/api/openai', async (req, res) => {
   }
 });
 
+app.post('/api/llm', async (req, res) => {
+  try {
+    const { apiKey, endpoint, body } = req.body || {};
+    if (!endpoint) {
+      return res.status(400).json({ error: 'Missing endpoint in request body' });
+    }
+
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    if (apiKey) {
+      headers['Authorization'] = `Bearer ${apiKey}`;
+    }
+
+    const resp = await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body || {})
+    });
+
+    const data = await resp.json().catch(() => ({}));
+    res.status(resp.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: String(err) });
+  }
+});
+
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`OpenAI proxy server listening on http://localhost:${port}`);

@@ -1,11 +1,13 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { ApiKeyProvider } from './contexts/ApiKeyContext';
+import { ModalProvider } from './contexts/ModalContext';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import RealtimeReportPage from './pages/RealtimeReportPage';
 import AiRecommendationPage from './pages/AiRecommendationPage';
 import AboutPage from './pages/AboutPage';
 
-const App = () => {
+const AppContent = () => {
   return (
     <div className="app-shell">
       <Navbar />
@@ -19,6 +21,16 @@ const App = () => {
         </Routes>
       </main>
     </div>
+  );
+};
+
+const App = () => {
+  return (
+    <ApiKeyProvider>
+      <ModalProvider>
+        <AppContent />
+      </ModalProvider>
+    </ApiKeyProvider>
   );
 };
 

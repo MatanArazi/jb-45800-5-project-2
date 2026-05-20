@@ -15,7 +15,7 @@ const AboutPage = () => {
           <h2>What the project includes</h2>
           <p>
             The site shows the top 100 coins, supports search and tracking up to 5 selected coins with a switch,
-            provides a realtime price report every second, and shows AI recommendations using OpenAI ChatGPT.
+            provides a realtime price report every second, and shows AI recommendations using AI agent by providing API key.
           </p>
         </div>
 
@@ -23,7 +23,7 @@ const AboutPage = () => {
           <img src={profileImage} alt="Profile image" className="profile-image" />
           <div>
             <h2>Developer</h2>
-            <p>Name: [Enter Name]</p>
+            <p>Name: [Matan Arazi]</p>
             <p>Course: Full Stack Web Developer</p>
             <p>Tools: React, TypeScript, Redux, Vite</p>
           </div>

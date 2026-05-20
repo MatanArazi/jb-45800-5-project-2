@@ -2,10 +2,12 @@ import { NavLink } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { RootState } from '../store';
 import { setSearchQuery } from '../features/coins/coinsSlice';
+import { useApiKey } from '../contexts/ApiKeyContext';
 
 const Navbar = () => {
   const dispatch = useAppDispatch();
   const searchQuery = useAppSelector((state: RootState) => state.coins.selection.searchQuery);
+  const { isKeySet } = useApiKey();
 
   return (
     <header className="navbar">
@@ -29,6 +31,11 @@ const Navbar = () => {
           aria-label="Search coins"
         />
       </div>
+      {isKeySet && (
+        <div className="navbar-api-status">
+          <span className="api-indicator">🔑 API Key Set</span>
+        </div>
+      )}
     </header>
   );
 };
