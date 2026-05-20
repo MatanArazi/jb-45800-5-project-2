@@ -50,13 +50,18 @@ app.post('/api/llm', async (req, res) => {
     if (!endpoint) {
       return res.status(400).json({ error: 'Missing endpoint in request body' });
     }
+    if (!apiKey) {
+      return res.status(400).json({ error: 'Missing API key in request body' });
+    }
 
     const headers = {
       'Content-Type': 'application/json'
     };
-    if (apiKey) {
-      headers['Authorization'] = `Bearer ${apiKey}`;
-    }
+    headers['Authorization'] = `Bearer ${apiKey}`;
+
+    console.log(`[LLM Proxy] 📤 Sending request to: ${endpoint}`);
+    console.log(`[LLM Proxy] Model: ${body?.model || 'not specified'}`);
+    console.log(`[LLM Proxy] Request body keys:`, Object.keys(body || {}));
 
     const resp = await fetch(endpoint, {
       method: 'POST',
@@ -64,9 +69,19 @@ app.post('/api/llm', async (req, res) => {
       body: JSON.stringify(body || {})
     });
 
+    console.log(`[LLM Proxy] 📥 Response status: ${resp.status}`);
+    
     const data = await resp.json().catch(() => ({}));
+    
+    if (!resp.ok) {
+      console.error(`[LLM Proxy] ❌ Error response:`, data);
+    } else {
+      console.log(`[LLM Proxy] ✅ Success - got response with ${data.choices?.length || 0} choices`);
+    }
+    
     res.status(resp.status).json(data);
   } catch (err) {
+    console.error('[LLM Proxy] ❌ Exception:', err.message);
     res.status(500).json({ error: String(err) });
   }
 });

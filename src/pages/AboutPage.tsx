@@ -1,4 +1,4 @@
-import profileImage from '../assets/profile.svg';
+import profileImage from '../assets/Profile pic.jpeg';
 
 const AboutPage = () => {
   return (
@@ -23,8 +23,8 @@ const AboutPage = () => {
           <img src={profileImage} alt="Profile image" className="profile-image" />
           <div>
             <h2>Developer</h2>
-            <p>Name: [Matan Arazi]</p>
-            <p>Course: Full Stack Web Developer</p>
+            <p>Name: Matan Arazi</p>
+            <p>Course: Full Stack Developer</p>
             <p>Tools: React, TypeScript, Redux, Vite</p>
           </div>
         </div>

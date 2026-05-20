@@ -31,7 +31,8 @@ const proxyCallLlm = async (apiKey: string | null, endpoint: string, body: any):
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(`LLM proxy error: ${response.status} - ${error.error || response.statusText}`);
+    const message = (error as any)?.error?.message || JSON.stringify(error) || response.statusText;
+    throw new Error(`LLM proxy error: ${response.status} - ${message}`);
   }
 
   const data = await response.json() as LLMResponse;
@@ -47,7 +48,7 @@ export const callLlm = async (
   endpoint: string,
   prompt: string,
   systemMessage = 'You are a cryptocurrency investment advisor. Provide clear, concise recommendations based on the data provided.',
-  model = 'meta/llama-2-70b-chat'
+  model = 'gpt-3.5-turbo'
 ): Promise<string> => {
   if (!prompt) {
     throw new Error('Prompt is required');

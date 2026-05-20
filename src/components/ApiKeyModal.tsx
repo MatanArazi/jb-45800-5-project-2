@@ -51,7 +51,7 @@ const ApiKeyModal = () => {
   return (
     <div className="modal-overlay" onClick={() => showModal && !isSaved && setShowModal(false)}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <h2>NVIDIA LLM API Key</h2>
+        <h2>LLM API Configuration</h2>
         
         {isSaved ? (
           <div className="api-key-success">
@@ -60,17 +60,10 @@ const ApiKeyModal = () => {
         ) : (
           <>
             <p>
-              Enter your NVIDIA Build API key to enable AI recommendations.
+              Enter your LLM API key to enable AI recommendations.
             </p>
             <p className="api-key-hint">
-              Get your free API key from{' '}
-              <a 
-                href="https://build.nvidia.com/models" 
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                NVIDIA Build
-              </a>
+              Supported providers: OpenAI, NVIDIA Build, Anthropic, or any OpenAI-compatible API.
             </p>
 
             <form onSubmit={handleSubmit} className="api-key-form">

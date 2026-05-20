@@ -43,24 +43,28 @@ const ApiKeyPromptModal = ({
   isOpen,
   onClose,
   onSubmit,
-  defaultEndpoint
+  defaultEndpoint,
+  defaultModel
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (key: string, endpoint: string) => void;
+  onSubmit: (key: string, endpoint: string, model: string) => void;
   defaultEndpoint?: string;
+  defaultModel?: string;
 }) => {
   const [keyValue, setKeyValue] = useState('');
   const [endpointValue, setEndpointValue] = useState(defaultEndpoint || '');
+  const [modelValue, setModelValue] = useState(defaultModel || '');
 
   useEffect(() => {
     setEndpointValue(defaultEndpoint || '');
-  }, [defaultEndpoint]);
+    setModelValue(defaultModel || '');
+  }, [defaultEndpoint, defaultModel]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (keyValue.trim()) {
-      onSubmit(keyValue.trim(), endpointValue.trim());
+      onSubmit(keyValue.trim(), endpointValue.trim(), modelValue.trim());
       setKeyValue('');
     }
   };
@@ -71,7 +75,7 @@ const ApiKeyPromptModal = ({
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h2>Enter LLM API Settings</h2>
-        <p>To get AI recommendations, provide your API key and the LLM endpoint to use.</p>
+        <p>To get AI recommendations, provide your API key, endpoint, and model name.</p>
 
         <form onSubmit={handleSubmit} className="api-key-form">
           <label>
@@ -91,12 +95,22 @@ const ApiKeyPromptModal = ({
               type="url"
               value={endpointValue}
               onChange={(e) => setEndpointValue(e.target.value)}
-              placeholder={defaultEndpoint || 'https://api.example.com/v1/chat/completions'}
+              placeholder={defaultEndpoint || 'https://api.openai.com/v1/chat/completions'}
+              className="api-key-input"
+            />
+          </label>
+          <label>
+            Model <span style={{ color: '#888', fontWeight: 'normal' }}>(optional)</span>
+            <input
+              type="text"
+              value={modelValue}
+              onChange={(e) => setModelValue(e.target.value)}
+              placeholder={defaultModel || 'gpt-3.5-turbo'}
               className="api-key-input"
             />
           </label>
           <p style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.35rem' }}>
-            Leave blank to use the default endpoint.
+            Leave blank to use defaults. Examples: gpt-3.5-turbo, gpt-4, claude-2, meta/llama-2-70b-chat
           </p>
           <button
             type="submit"
@@ -122,7 +136,7 @@ const ApiKeyPromptModal = ({
 const AiRecommendationPage = () => {
   const dispatch = useAppDispatch();
   const { list, selection, details } = useAppSelector((state: RootState) => state.coins);
-  const { apiKey, endpoint, setApiKey, setEndpoint, isKeySet } = useApiKey();
+  const { apiKey, endpoint, model, setApiKey, setEndpoint, setModel, isKeySet } = useApiKey();
   const [showApiKeyPrompt, setShowApiKeyPrompt] = useState(false);
   const [selectedId, setSelectedId] = useState<string | undefined>(selection.selectedIds[0]);
   const [selectedRecommendation, setSelectedRecommendation] = useState<string>('');
@@ -145,16 +159,17 @@ const AiRecommendationPage = () => {
 
   const selectedCoin = selectedCoins.find((coin) => coin.id === selectedId);
 
-  const handleApiKeySubmit = (key: string, endpointValue: string) => {
+  const handleApiKeySubmit = (key: string, endpointValue: string, modelValue: string) => {
     setApiKey(key);
     setEndpoint(endpointValue);
+    setModel(modelValue);
     setShowApiKeyPrompt(false);
 
     // Continue with the pending action
     if (pendingAction === 'single') {
-      executeRecommendation(key, endpointValue);
+      executeRecommendation(key, endpointValue, modelValue);
     } else if (pendingAction === 'all') {
-      executeAllRecommendations(key, endpointValue);
+      executeAllRecommendations(key, endpointValue, modelValue);
     }
     setPendingAction(null);
   };
@@ -172,10 +187,10 @@ const AiRecommendationPage = () => {
       return;
     }
 
-    executeRecommendation(apiKey, endpoint);
+    executeRecommendation(apiKey, endpoint, model);
   };
 
-  const executeRecommendation = async (key: string, endpointValue: string) => {
+  const executeRecommendation = async (key: string, endpointValue: string, modelValue: string) => {
     setLoadingRecommendation(true);
     setErrorRecommendation(null);
     setSelectedRecommendation('');
@@ -192,7 +207,7 @@ const AiRecommendationPage = () => {
       }
 
       const prompt = buildPrompt(coinDetails);
-      const recommendation = await callLlm(key, endpointValue, prompt);
+      const recommendation = await callLlm(key, endpointValue, prompt, undefined, modelValue);
       setSelectedRecommendation(recommendation || 'No valid recommendation was returned.');
     } catch (fetchError) {
       const message = (fetchError as Error).message;
@@ -219,10 +234,10 @@ const AiRecommendationPage = () => {
       return;
     }
 
-    executeAllRecommendations(apiKey, endpoint);
+    executeAllRecommendations(apiKey, endpoint, model);
   };
 
-  const executeAllRecommendations = async (key: string, endpointValue: string) => {
+  const executeAllRecommendations = async (key: string, endpointValue: string, modelValue: string) => {
     setLoadingAll(true);
     setAllRecommendations(
       selectedCoins.map((coin) => ({
@@ -256,7 +271,7 @@ const AiRecommendationPage = () => {
         return buildPrompt(coinDetails);
       });
 
-      const recommendations = await callLlmBatch(key, endpointValue, prompts);
+      const recommendations = await callLlmBatch(key, endpointValue, prompts, undefined, modelValue);
 
       setAllRecommendations(
         selectedCoins.map((coin, index) => ({
@@ -382,6 +397,7 @@ const AiRecommendationPage = () => {
       <ApiKeyPromptModal
         isOpen={showApiKeyPrompt}
         defaultEndpoint={endpoint ?? ''}
+        defaultModel={model ?? ''}
         onClose={() => {
           setShowApiKeyPrompt(false);
           setPendingAction(null);
